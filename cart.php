@@ -1,19 +1,13 @@
 <?php
-session_start();
-calculateTotalCart();
-
-if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-
+require_once __DIR__ . '/includes/bootstrap.php';
+cart_recalculate();
 
 if (isset($_POST['add_to_cart'])) {
-    $product_id = $_POST['product_id'];
-    $product_name = $_POST['product_name'];
-    $product_price = $_POST['product_price'];
-    $product_image = $_POST['product_image'];
-    $product_quantity = $_POST['product_quantity'];
+    $product_id = max(0, (int) ($_POST['product_id'] ?? 0));
+    $product_name = trim($_POST['product_name'] ?? '');
+    $product_price = max(0, (float) ($_POST['product_price'] ?? 0));
+    $product_image = basename($_POST['product_image'] ?? '');
+    $product_quantity = max(1, (int) ($_POST['product_quantity'] ?? 1));
 
 
     $product_array = array(
@@ -25,57 +19,35 @@ if (isset($_POST['add_to_cart'])) {
     );
 
     
-    if (isset($_SESSION['cart'])) {
-        $products_array_ids = array_column($_SESSION['cart'], "product_id");
+    if ($product_id && $product_name !== '') {
+        $products_array_ids = array_map('intval', array_column($_SESSION['cart'], "product_id"));
 
         // Controlla se il prodotto è già nel carrello
-        if (!in_array($product_id, $products_array_ids)) {
+        if (!in_array($product_id, $products_array_ids, true)) {
             $_SESSION['cart'][$product_id] = $product_array;
         } else {
             echo '<script>alert("This product is already in your cart.")</script>';
         }
-    } else {
-        $_SESSION['cart'][$product_id] = $product_array;
     }
-    calculateTotalCart();
+    cart_recalculate();
 } elseif (isset($_POST['remove_product'])) {
-    $product_id = $_POST['product_id'];
+    $product_id = (int) ($_POST['product_id'] ?? 0);
     unset($_SESSION['cart'][$product_id]);
-    calculateTotalCart();
+    cart_recalculate();
 } elseif (isset($_POST['edit_quantity'])) {
-    $product_id = $_POST['product_id'];
-    $product_quantity = $_POST['product_quantity'];
+    $product_id = (int) ($_POST['product_id'] ?? 0);
+    $product_quantity = max(1, (int) ($_POST['product_quantity'] ?? 1));
     if (isset($_SESSION['cart'][$product_id])) {
         $_SESSION['cart'][$product_id]['product_quantity'] = $product_quantity;
     }
-    calculateTotalCart();
-}
-
-if (!isset($_SESSION['total'])) {
-    calculateTotalCart();
-}
-
-function calculateTotalCart() {
-    $total = 0;
-    $total_quantity = 0;
-    
-    if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-
-    foreach ($_SESSION['cart'] as $key => $product) {
-        $price = $product['product_price'] ?? 0;
-        $quantity = $product['product_quantity'] ?? 0;
-        $total += ($price * $quantity);
-        $total_quantity += $quantity;
-    }
-
-    $_SESSION['total'] = $total;
-    $_SESSION['quantity'] = $total_quantity;
+    cart_recalculate();
 }
 ?>
 
-<?php include('layouts/header.php');?>
+<?php
+$pageTitle = 'Cart | Brook';
+include('layouts/header.php');
+?>
 
 <section class="cart container my-5 py-5">
     <div class="container mt-3">
@@ -95,7 +67,7 @@ function calculateTotalCart() {
         <tr>
             <td>
                 <div class="product-info">
-                    <img src="assets/imgs/<?php echo htmlspecialchars($value['product_image']); ?>"/>
+                    <img src="assets/imgs/<?php echo e(product_image_path($value['product_image'])); ?>" alt="<?php echo e($value['product_name']); ?>"/>
                     <div>
                         <p><?php echo htmlspecialchars($value['product_name']); ?></p>
                         <small><span>€</span><?php echo htmlspecialchars($value['product_price']); ?></small>

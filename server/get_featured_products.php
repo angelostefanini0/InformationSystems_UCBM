@@ -1,6 +1,6 @@
 <?php
 
-include('connection.php');
+require_once __DIR__ . '/connection.php';
 
 $stmt = $conn->prepare("SELECT * FROM products WHERE product_category NOT LIKE '%accessori%' ORDER BY RAND() LIMIT 4");
 

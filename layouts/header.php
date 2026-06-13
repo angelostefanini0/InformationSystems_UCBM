@@ -1,26 +1,9 @@
 <?php
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../includes/bootstrap.php';
 
-if (!function_exists('product_image_path')) {
-    function product_image_path($image) {
-        $image = basename(trim((string) $image));
-        $basePath = __DIR__ . '/../assets/imgs/';
-        if ($image !== '' && is_file($basePath . $image)) return $image;
-        foreach (['webp', 'avif', 'jpg', 'jpeg', 'png'] as $extension) {
-            if ($image !== '' && is_file($basePath . $image . '.' . $extension)) return $image . '.' . $extension;
-        }
-        return 'void.png';
-    }
-}
-
-$current_page = basename($_SERVER['PHP_SELF']);
-?>
-
-
-
+$currentPage = basename($_SERVER['PHP_SELF']);
+$pageTitle = $pageTitle ?? 'Brook Nutrition & Performance';
 ?>
 
 
@@ -29,7 +12,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title><?php echo e($pageTitle); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css"/>
@@ -52,25 +35,25 @@ $current_page = basename($_SERVER['PHP_SELF']);
           <div class="collapse navbar-collapse nav-buttons" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link <?php echo $current_page === 'index.php' ? 'active' : ''; ?>" href="index.php">Home</a>
+                <a class="nav-link <?php echo $currentPage === 'index.php' ? 'active' : ''; ?>" href="index.php">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link <?php echo in_array($current_page, ['shop.php', 'single_product.php']) ? 'active' : ''; ?>" href="shop.php">Nutrition</a>
+                <a class="nav-link <?php echo in_array($currentPage, ['shop.php', 'single_product.php'], true) ? 'active' : ''; ?>" href="shop.php">Nutrition</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link <?php echo $current_page === 'accessories.php' ? 'active' : ''; ?>" href="accessories.php">Accessories</a>
+                <a class="nav-link <?php echo $currentPage === 'accessories.php' ? 'active' : ''; ?>" href="accessories.php">Accessories</a>
               </li>
               <li class="nav-item" >
-                <a class="nav-link <?php echo $current_page === 'contact.php' ? 'active' : ''; ?>" href="contact.php">Contact</a>
+                <a class="nav-link <?php echo $currentPage === 'contact.php' ? 'active' : ''; ?>" href="contact.php">Contact</a>
               </li>
 
               <li class="nav-item nav-actions d-flex align-items-center">
-                <a class="nav-link <?php echo $current_page === 'cart.php' ? 'active' : ''; ?>" href="cart.php" aria-label="Shopping cart" title="Shopping cart">
+                <a class="nav-link <?php echo $currentPage === 'cart.php' ? 'active' : ''; ?>" href="cart.php" aria-label="Shopping cart" title="Shopping cart">
                     <i class="fa-solid fa-bag-shopping"></i> <?php if(isset($_SESSION['quantity']) && $_SESSION['quantity'] != 0){?>
                       <span class="cart-quantity"> <?php echo $_SESSION['quantity']; ?> </span>
                       <?php }?>
                 </a>
-                <a class="nav-link <?php echo in_array($current_page, ['account.php', 'login.php', 'register.php']) ? 'active' : ''; ?>" href="account.php" aria-label="Your account" title="Your account">
+                <a class="nav-link <?php echo in_array($currentPage, ['account.php', 'login.php', 'register.php'], true) ? 'active' : ''; ?>" href="account.php" aria-label="Your account" title="Your account">
                     <i class="fa-solid fa-user"></i>
                 </a>
             </li>

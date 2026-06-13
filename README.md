@@ -88,7 +88,7 @@ The database stores registered users, product information, product images, order
    php_project.sql
    ```
 
-7. Check the database credentials in [`server/connection.php`](server/connection.php). The default local configuration is:
+7. Check the database credentials in [`config/database.php`](config/database.php). The default local configuration is:
 
    ```text
    host: localhost
@@ -96,6 +96,9 @@ The database stores registered users, product information, product images, order
    password: empty
    database: php_project
    ```
+
+   You can override them with the `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and
+   `DB_PASSWORD` environment variables.
 
 8. Open the application in the browser:
 
@@ -117,6 +120,11 @@ sito/
 |-- layouts/
 |   |-- footer.php
 |   `-- header.php
+|-- config/
+|   `-- database.php
+|-- includes/
+|   |-- bootstrap.php
+|   `-- helpers.php
 |-- server/
 |   |-- complete_payment.php
 |   |-- connection.php
